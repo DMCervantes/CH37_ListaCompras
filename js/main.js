@@ -12,6 +12,7 @@ let isValid=true;
 let contador=0;
 let costoTotal=0;
 let TotalEnProductos=0;
+let datos = new Array();
 
 let tablaListaCompras= document.getElementById("tablaListaCompras");
 let cuerpoTabla = tablaListaCompras.getElementsByTagName("tbody").item(0);
@@ -36,10 +37,13 @@ btnClear.addEventListener("click",function(event){
     productosTotal.innerText = TotalEnProductos;
     precioTotal.innerText =`$ ${costoTotal.toFixed(2)}`;
     cuerpoTabla.innerHTML="";
+    datos= new Array ();
     //Guardar en almecenamiento del navegador
     localStorage.setItem("contadorProductos", contador);
     localStorage.setItem("TotalEnProductos",TotalEnProductos);
     localStorage.setItem("costoTotal", costoTotal);
+    localStorage.removeItem("datos");
+    
 
     txtNombre.focus();
 
@@ -102,6 +106,14 @@ btnAgregar.addEventListener("click",function(event){
             <td>${precio}</td>
         </tr>
         `;
+        let elemento = `{"id" :${contador},
+                         "nombre": "${txtNombre.value}",
+                         "cantidad" : ${txtNumber.value},
+                         "precio" : ${precio}
+        }`
+        datos.push(JSON.parse(elemento));
+        console.log(datos);
+        localStorage.setItem("datos", JSON.stringify(datos))
         cuerpoTabla.insertAdjacentHTML("beforeend",row);
         contadorProductos.innerText = contador;
         TotalEnProductos += parseFloat(txtNumber.value);
@@ -137,7 +149,19 @@ window.addEventListener("load", function(event){
     contadorProductos.innerText = contador;
     productosTotal.innerText = TotalEnProductos;
     precioTotal.innerText =`$ ${costoTotal.toFixed(2)}`;
+   }//if !null
 
+   if(this.localStorage.getItem("datos")!=null){
+    datos = JSON.parse(this.localStorage.getItem("datos"));
+    datos.forEach((r)=>{
+        row =`<tr>
+        <td>${r.id}</td>
+        <td>${r.nombre}</td>
+        <td>${r.cantidad}</td>
+        <td>${r.precio}</td>
+    </tr> `;
+    cuerpoTabla.insertAdjacentHTML("beforeend",row);
+    }); //foreach
 
    }
 })
